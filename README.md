@@ -264,29 +264,3 @@ gin, gist, brin, btree etc
 * json schema extension
 * referencial consistency
 
-
-
-* Solutions
-  * relational
-  * document databases
-  * hybrid (fhirbase solution)
-  
-* HS solution
-  * metadata driven
-  * history implementation
-  * transactions implementation
-  * search implimentation
-    * parse parameters
-    * dynamic query generation
-    * collections :(
-    * fhirpath
-      * fixes for FHIR json representation
-    * filter statement
-      * strings
-      * uri
-      * date
-      * tokens
-      * quantity
-    * indexing
-    * include & rev-include (has)
-    * sorting
