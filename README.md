@@ -1,39 +1,4 @@
-## FHIR generic database
-
-* Problem Statement
-  * Requirements
-    * Transactions
-    * Search
-    * Extensibility
-    * Ad-hock queries and analytic
-    * Migrations
-  * Constraints
-    * small-data
-
-* Solutions
-  * relational
-  * document databases
-  * hybrid (fhirbase solution)
-  
-* HS solution
-  * metadata driven
-  * history implementation
-  * transactions implementation
-  * search implimentation
-    * parse parameters
-    * dynamic query generation
-    * collections :(
-    * fhirpath
-      * fixes for FHIR json representation
-    * filter statement
-      * strings
-      * uri
-      * date
-      * tokens
-      * quantity
-    * indexing
-    * include & rev-include (has)
-    * sorting
+# Generic database for FHIR
 
 ## Who we are?
 
@@ -42,27 +7,26 @@ HealthSamurai - small startup, pioneering FHIR in Health IT
 ## Our Beliefs
 
 * We believe, that FHIR eco-system is a future
-* We believe in generic FHIR platform as an brick in this eco-system,
-  which allow to focus on innovation
+* We believe in generic FHIR platform 
+  as a useful brick in this eco-system
 * We are proving this hypothesis with our clients, 
   which are in production or going to production soon
 
+## Problem/ Challenged
 
-## Generic DataBase
+* Generic server 
+  needs Generic Database
 
-Generic backend requires generic database to store and query
-FHIR resources in a sofisticated way.
+## Minimal Requirements
 
-## Requirements
-
-* CRUD for resources
-* History
-* ACID Transactions
-* Sophisticated search
+* Transactions (ACID)
+* History tracking
+* Sophisticated query (FHIR Search, Analytic etc)
+* Extensibility (Extensions, Search Params, Compartments)
 
 ----
 
-* Not big data
+Note: we are not big data!
 
 ## Approaches
 
@@ -70,16 +34,17 @@ FHIR resources in a sofisticated way.
 * Document DB
 * Tripple Store
 * ~ Graph DB
+* Plygot
 
 ## Relational 
 
-* - a lot of tables ~ 1K tables (first version of fhirbase)
-* - expensive and complicated insert ()
-* - expensive and complicated search (joins)
-* - extensibility is tricky
-* + more familar
-* + partial updates
+* + more traditional (tools like ORM)
 * + flexible queries  (analytic)
+* + partial updates
+* - a lot of tables ~ 1K tables (first version of fhirbase)
+* - expensive and complicated insert (resource -> ~10 tables)
+* - expensive and complicated search (joins)
+* - extensibility is tricky (dynamic schema)
 
 
 ## Document DBs
@@ -87,51 +52,62 @@ FHIR resources in a sofisticated way.
 * + one to one match Resource <-> Document
 * + most of Doc Db's distributed (do we really need it?)
 * - no ACID transactions (mongo, rethink) - manual consistency
-* - no sophisticated queries without materialization (no joins, window functions etc)
+* - support queries thro different Resource Types (joins, window functions etc)
 
-## Key-Value + Indexes  hybrids
+## Polyglot: Key-Value + Indexes 
 
-* riak + elastic search
 * + scale & availability
+* + flexible
 * - consistency
+* - complexity
 
 ## Tripple store
 
-* + extensibility flexible schema
+* + extensibility
+* + semantic
+* - popular implementations
 * - performance
-* - no mature/free implementations
 
 ## Graph DBs
 
 If you know some experiments - please let me know
 
-## RDBMs + Documents hybrid 
 
-More RDBMs support json as native datatype.
+## Hybryd
 
-Example:
+Hybryd relational & document storage,
+using databases json support (especially PostgreSQL)
 
-```sql
--- pg jsonb datatype
+* fhirbase
+* aidbox
 
-```
+## Overview
+
+* store FHIR resources in json column
+* use `fhirpath` functions for access to fields 
+* use functional indexes to speedup queries
+
+---
+
+* Native transactions
+* Expressive power of SQL
+* Advanced features of PostgreSQL
 
 
-## RDBMs + Documents hybrid 
+## What if not a postgresql
 
-* + one to one match Resource <-> Document column
-* + sophisticated queries (using json field access functions)
-* + indexes by expression/functional indexes
-* + ACID
-* - quite new technology
-* - scale & availability
+SQL standard 2016
+includes *json* type and utility *functions*
 
-## SQL 2017
 
-* fresh SQL standard include json type and functions on top of it
-* it's based on Oracle implementation, but PostgreSQL started working on it
-* so you could apply same approach to different RDBMs
-* i will talk about PostgreSQL implementation
+## Let's implement it now
+
+* CRUD
+* History
+* Search
+* Indexes
+* Terminology
+
 
 ## CRUD implementation
 
@@ -287,3 +263,30 @@ gin, gist, brin, btree etc
 
 * json schema extension
 * referencial consistency
+
+
+
+* Solutions
+  * relational
+  * document databases
+  * hybrid (fhirbase solution)
+  
+* HS solution
+  * metadata driven
+  * history implementation
+  * transactions implementation
+  * search implimentation
+    * parse parameters
+    * dynamic query generation
+    * collections :(
+    * fhirpath
+      * fixes for FHIR json representation
+    * filter statement
+      * strings
+      * uri
+      * date
+      * tokens
+      * quantity
+    * indexing
+    * include & rev-include (has)
+    * sorting
