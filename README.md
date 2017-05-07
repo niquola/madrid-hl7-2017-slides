@@ -47,7 +47,6 @@ Generic Database
 * Extensibility (Extensions, Search Params, Compartments)
 
 
-
 ## Approaches
 
 * Relational DB
