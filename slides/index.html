@@ -206,7 +206,7 @@
 * [+] ACID
 * [-] A lot of tables ~ 1K tables
 * [-] Complicated CRUD
-* [-] Complicated Search (a log for joins :)
+* [-] Complicated Search (joins not for free :)
 * [-] Extensibility is tricky
 
 </script></section>
@@ -275,22 +275,22 @@ using json  datatype support
 
 <section data-markdown><script type="text/template">
 
-## What we've got
+## fhirbase
 
 ---
 
 * Transactions
 * Expressive power of SQL (add-hock queries, analytic etc)
 * Advanced features of PostgreSQL
-  indexing, extensions etc
+  indexing, extensions (for example R-extension) etc
 
 </script></section>
 
 <section data-markdown><script type="text/template">
 
-## What if not a postgres
+## What if not postgres
 
-SQL standard 2016 includes
+SQL standard 2016 introduced
 *json* type and utility *functions*
 
 * mysql
@@ -318,6 +318,11 @@ SELECT jsonb_array_elements(doc#>'{a,b}')
       "b":[{"d": 1},
            {"e": 2}]}}
   $JSON$::jsonb doc) _;
+
+----------
+ {"d": 1}
+ {"e": 2}
+ {"e": 3}
 
 ```
 </script></section>
