@@ -40,8 +40,7 @@ LIMIT 10
 
 SELECT code, display
 FROM concept
-where
-property->>'system' =  'Heart'
+where property->>'system' =  'Heart'
 LIMIT 10
 ;
 

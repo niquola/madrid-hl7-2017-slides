@@ -1,9 +1,25 @@
+/*
+Let's scratch CRUD implementation:
+
+We will create table per resource type
+with jsonb column to store original resource
+and set of additional columns like
+id, verisionId (txid), lastUpdated (ts)
+
+To keep history we could crete tween table
+and put historycal resources there
+on updates and deletes
+
+*/
+
 \timing
+
 
 -- extension for uuid
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- function for extension
+
 SELECT gen_random_uuid();
 
 DROP TABLE IF EXISTS patient;
@@ -17,7 +33,6 @@ CREATE TABLE IF NOT EXISTS patient (
   resource jsonb not null
 )
 ;
-
 
 DROP TABLE IF EXISTS patient_history;
 CREATE TABLE patient_history (
@@ -44,7 +59,9 @@ INSERT INTO patient (status, txid, resource) VALUES
 \x
 
 -- select resources
+
 SELECT * FROM patient
+LIMIT 2
 ;
 
 -- access attributes
@@ -53,32 +70,34 @@ SELECT resource#>'{name,0,given,0}' as first_name
          (resource->>'birthDate')::timestamptz
        ) as birth_date
 FROM patient
+LIMIT 5;
 ;
 
 
--- simple search
+-- simple string search
+
 SELECT id
-      ,resource->'name'
+      , resource#>>'{name,0,given,0}'
   FROM patient
- WHERE resource#>>'{name,0,given,0}' ilike '%rene%'
+ WHERE resource#>>'{name,0,given,0}' ilike '%jo%'
 ;
+
+-- search by date by coersing json string field
+-- into postgresql date and using built-in operators
 
 SELECT substring(id for 6) || '...'
        ,resource->'name'
+       ,(resource->>'birthDate')::date
   FROM patient
  WHERE
    (resource->>'birthDate')::date > '1978-01-01'::date
+ LIMIT 10
 ;
 
 -- more interesting examples
 
--- load data from some fhir server
--- https://www.postgresql.org/docs/9.6/static/app-psql.html
-
+-- load data from Grahame fhir server
 \set bundle `curl http://test.fhir.org/r3/Patient/?_format=json\&_count=10000` 
-
--- https://www.postgresql.org/docs/9.5/static/functions-json.html
-
 
 -- see bundle
 
@@ -97,13 +116,14 @@ LIMIT 5
 -- clear the table
 TRUNCATE patient;
 
--- load patients
+-- load patients from bundle into patient table
+
 INSERT INTO patient (id, ts, txid, status, resource)
-SELECT e#>>'{resource,id}',
-       (e#>>'{resource,meta,lastUpdated}')::timestamptz ,
-       5 ,
-       'imported',
-       e->'resource'
+SELECT e#>>'{resource,id}', -- id
+       (e#>>'{resource,meta,lastUpdated}')::timestamptz , -- ts
+       5 , -- txid
+       'imported', -- status
+       e->'resource' -- resource
 FROM jsonb_array_elements((:'bundle'::jsonb)->'entry') e
 ;
 

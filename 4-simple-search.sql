@@ -6,7 +6,6 @@ RETURNS text AS $$
 $$ LANGUAGE sql IMMUTABLE
 COST 1;
 
--- hack to make array_to_string immutble
 CREATE OR REPLACE FUNCTION
 patient_name(resource jsonb)
 RETURNS text AS $$
@@ -25,7 +24,7 @@ SELECT
   patient_name(resource)
 FROM patient
 WHERE
-  patient_name(resource) ilike '%Mars%'
+  patient_name(resource) ilike '%Jon%'
   -- AND patient_name(resource) ilike '%pen%'
 LIMIT 20
 ;
@@ -35,7 +34,7 @@ LIMIT 20
 -- les'ts speed up seach by indexes
 -- https://www.postgresql.org/docs/9.6/static/pgtrgm.html
 
-CREATE EXTENSION If NOT EXISTS pg_trgm; 
+CREATE EXTENSION If NOT EXISTS pg_trgm;
 
 CREATE INDEX patient_name_ilike_idx
 ON patient using gin (
@@ -49,7 +48,7 @@ DROP INDEX patient_name_ilike_idx;
 -- https://www.postgresql.org/docs/9.6/static/sql-vacuum.html
 VACUUM (FULL,ANALYZE) patient;
 
-EXPLAIN ANALYSE
+--EXPLAIN ANALYSE
 SELECT
   id,
   patient_name(resource)
@@ -58,6 +57,5 @@ WHERE
   string_join(
     knife_extract_text(resource, '[["name","given"], ["name","family"]]')
   ) ilike '%mar%'
-  -- patient_name(resource) ilike '%mar%'
 LIMIT 20
 ;

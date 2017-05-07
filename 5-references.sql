@@ -25,10 +25,10 @@ SELECT id,
        resource#>'{subject,reference}'
 FROM encounter
 limit 100
-
 ;
 
 -- let's  join with patients
+
 SELECT e.id,
        e.resource#>'{subject,reference}',
        p.resource#>'{name,0,family}' as name
@@ -115,6 +115,7 @@ LIMIT 5
 ;
 
 -- fix references
+-- {reference: "Patient/1"} => {resourceType: "Patient", "id": "1"}
 DROP FUNCTION fix_encounter(enc jsonb);
 CREATE OR REPLACE FUNCTION fix_encounter(enc jsonb)
 RETURNS jsonb AS $$
