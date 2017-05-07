@@ -26,13 +26,19 @@ DROP TABLE IF EXISTS patient;
 
 CREATE TABLE IF NOT EXISTS patient (
   id text primary key DEFAULT gen_random_uuid(),
-  txid bigint not null,
+  txid bigint not null, -- transaciton id as version id
   ts timestamptz DEFAULT current_timestamp,
   resource_type text default 'Patient',
   status text not null,
   resource jsonb not null
 )
 ;
+
+-- about txid as vid see may post
+-- https://medium.com/@niquola/fhir-history-transactions-subscriptions-70d4f04607e0 
+
+
+-- HISTORY
 
 DROP TABLE IF EXISTS patient_history;
 CREATE TABLE patient_history (
@@ -51,8 +57,8 @@ CREATE TABLE patient_history (
 TRUNCATE patient;
 
 INSERT INTO patient (status, txid, resource) VALUES
-('created', 1, '{"name":[{"given":["Nikolai"], "family": ["Ryzhikov"]}], "birthDate": "1980-03-05"}')
-,('created', 2, '{"name":[{"given":["Rene"], "family": ["Spronk"]}], "birthDate": "1970-03-05"}')
+ ('created', 1, '{"name":[{"given":["Nikolai"], "family": ["Ryzhikov"]}], "birthDate": "1980-03-05"}')
+,('created', 2, '{"name":[{"given":["Rene"], "family": ["Spronk"]}], "birthDate": "1972-03-05"}')
 ,('created', 3, '{"name":[{"given":["Grahame"], "family": ["Gieve"]}], "birthDate": "1975-02-05"}');
 ;
 
@@ -74,7 +80,7 @@ LIMIT 5;
 ;
 
 
--- simple string search
+-- simple string search by ilike
 
 SELECT id
       , resource#>>'{name,0,given,0}'
@@ -91,7 +97,7 @@ SELECT substring(id for 6) || '...'
   FROM patient
  WHERE
    (resource->>'birthDate')::date > '1978-01-01'::date
- LIMIT 10
+ LIMIT 4
 ;
 
 -- more interesting examples

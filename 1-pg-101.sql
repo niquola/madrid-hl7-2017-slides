@@ -13,40 +13,32 @@ tabl columns
 
 SELECT '{"a":1}'::jsonb;
 
--- jsonb   
--- ----------
--- {"a": 1}
--- (1 row)
-
 -- we could access field using -> operator
 
 SELECT ('{"a":{"b":[1,2]}}'::jsonb)->'a';
 
--- ?column?    
--- ---------------
--- {"b": [1, 2]}
--- (1 row)
-
 -- we access deeply nested
 -- fileds by path using #> operator
 
-SELECT ('{"a":{"b":[1,2]}}'::jsonb)#>'{a,b,1}';
-
--- ?column? 
--- ----------
--- 1
--- (1 row)
+SELECT ('{"a":{"b":[":)",":("]}}'::jsonb)#>'{a,b,0}';
 
 -- we could unnest json array into relation
 -- to apply 
 
 SELECT jsonb_array_elements(doc#>'{a,b}')
- FROM ( SELECT '{"a":{"b":[{"d": 1},{"e": 2}]}}'::jsonb doc) _;
+ FROM (
+  SELECT $JSON$
+    {"a": {
+      "b":[{"d": 1},
+           {"e": 2},
+           {"e": 3}]}}
+  $JSON$::jsonb doc) _;
 
 -- here is how we could simumate
 -- document database
 
-CREATE TABLE IF NOT EXISTS document (
+CREATE TABLE
+IF NOT EXISTS document (
   id serial primary key,
   doc jsonb
 );
@@ -59,25 +51,25 @@ VALUES ('{"a":2, "b": 1}');
 INSERT INTO document (doc)
 VALUES ('{"a":1, "b": 2}');
 
-SELECT doc, doc->'a'
+SELECT doc
 FROM document;
 
--- doc    | ?column? 
--- ----------+----------
--- {"a": 2} | 2
--- (1 rows)
-
-SELECT doc
+SELECT
+   doc->'a' as a,
+   doc->'b' as b
 FROM document
-WHERE (doc->>'a')::numeric = 1
+WHERE
+  -- any SQL expression
+  (doc->>'a')::numeric = 1 
 ;
 
-SELECT d1.doc as d1, d2.doc as d2
-FROM document d1, document d2
+SELECT d1.doc as d1,
+       d2.doc as d2
+FROM document d1,
+     document d2
 WHERE
   d1.doc->>'a' = d2.doc->>'b'
 ;
-
 
 -- More about jsonb type and functions
 

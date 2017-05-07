@@ -2,8 +2,16 @@
 
 ## Who we are?
 
-HealthSamurai - we are startup, 
+I'm Ryzhikov Nikolai 
+
+CTO & Co-founder of HealthSamurai
+
+We are startup, 
 pioneering FHIR in Health IT
+
+* niquola (on twitter, github)
+* nicola (RIO) (on fhir chat)
+
 
 ## Our Beliefs
 
@@ -12,11 +20,23 @@ pioneering FHIR in Health IT
   as a useful brick in this eco-system
 * We are proving this hypothesis with our clients, 
   which are in production or going to production soon
+  
+  
+  
+  
+  
 
 ## Problem/ Challenged
 
 
-Generic server needs Generic Database
+Generic server needs 
+Generic Database
+
+
+
+
+
+
 
 
 ## Minimal Requirements
@@ -27,7 +47,6 @@ Generic server needs Generic Database
 * Extensibility (Extensions, Search Params, Compartments)
 
 
-> HealthIT mostly are not big data!
 
 ## Approaches
 
@@ -38,50 +57,79 @@ Generic server needs Generic Database
 * Plygot
 * Hybryd
 
+
+
 ## Relational 
 
 * + more traditional (tools like ORM)
 * + flexible queries  (analytic)
 * + partial updates
-* - a lot of tables ~ 1K tables (first version of fhirbase)
-* - expensive and complicated insert (resource -> ~10 tables)
-* - expensive and complicated search (joins)
+* - a lot of tables ~ 1K tables 
+    (first version of fhirbase)
+* - expensive and complicated insert 
+    (resource -> ~10 tables)
+* - expensive and complicated search 
+    (joins are not for free)
 * - extensibility is tricky (dynamic schema)
+
+
 
 
 ## Document DBs
 
 * + one to one match Resource <-> Document
-* + most of Doc Db's distributed (do we really need it?)
-* - no ACID transactions (mongo, rethink) - manual consistency
-* - support queries thro different Resource Types (joins, window functions etc)
+* + most of Doc Db's distributed and available 
+* - no ACID transactions (mongo, rethink) 
+    manual consistency is a hell
+* - support queries thro different Resource Types 
+    (joins, window functions etc)
+
 
 ## Polyglot: Key-Value + Indexes 
 
+For example: 
+ casandre or riak + elastic
+
 * + scale & availability
 * + flexible
-* - consistency
 * - complexity
+* - consistency
+
+
 
 ## Tripple store
+
+Like datomic
 
 * + extensibility
 * + semantic
 * - popular implementations
 * - performance
 
+
+
+
 ## Graph DBs
 
 If you know some experiments - please let me know
 
 
-## Hybryd
 
-Hybryd relational & document storage,
+
+
+
+
+## Our solution - hybrid
+
+Hybrid relational & document storage,
 using databases json support (especially PostgreSQL)
 
 * fhirbase
 * aidbox
+
+
+
+
 
 ## Overview
 
@@ -95,6 +143,9 @@ using databases json support (especially PostgreSQL)
 * Expressive power of SQL
 * Advanced features of PostgreSQL
   indexing, extensions etc
+
+
+
 
 ## What if not a postgres
 

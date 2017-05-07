@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>health-samurai</title>
+
+    <meta name="description" content="FHIR">
+    <meta name="author" content="Nikolay Ryzhikov">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css"/>
+    <link rel="stylesheet" href="css/theme/white.css" id="theme"/>
+
+
+
+    <!-- <link rel="stylesheet" href="lib/css/zenburn.css"> -->
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+
+    <!-- Printing and PDF exports -->
+    <script>
+     var link = document.createElement( 'link' );
+     link.rel = 'stylesheet';
+     link.type = 'text/css';
+     link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+     document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]><script src="lib/js/html5shiv.js"></script><![endif]-->
+    <style>
+     @font-face {
+         font-family: fontello;
+         src: url('font/fontello.woff') format('woff'), url('font/fontello.eot') format('embedded-opentype'),url('font/fontello.woff') format('woff'),url('font/fontello.svg') format('svg'),url('font/fontello.ttf') format('truetype');
+
+     }
+
+     body .hs-icon {
+         font-family: fontello;
+         text-transform: none;
+         -webkit-font-smoothing: antialiased;
+         text-align: center;
+         speak: none;
+         font-weight: normal;
+         text-decoration: inherit;
+         display: inline-block;
+         font-style: normal;
+         font-variant: normal;
+         -moz-osx-font-smoothing: grayscale;
+
+     }
+
+     body .hs-icon.icon-mapper:before {
+         content: '\e800';
+
+     }
+
+     body .hs-icon.icon-foodtaster:before {
+         content: '\e801';
+
+     }
+
+     body .hs-icon.icon-aidbox:before {
+         content: '\e806';
+
+     }
+
+     body .hs-icon.icon-fhirbase:before {
+         content: '\e802';
+
+     }
+
+     body .hs-icon.icon-formstamp:before {
+         content: '\e803';
+
+     }
+
+     body .hs-icon.icon-choice:before {
+         content: '\e804';
+
+     }
+
+     body .hs-icon.icon-samurai:before {
+         content: '\e805';
+
+     }
+
+    .reveal pre code {
+        background: black;
+        overflow: hidden;
+        max-height: 500px;
+        padding: 20px;
+    }
+
+     .reveal section img {
+         border: none;
+         box-shadow: none;
+     }
+     .slidernav img{
+         width: 80px;
+         display: inline-block;
+         margin: 10px;
+     }
+     h3 strong {
+         color: #DC322F;
+     }
+
+     .red {
+         color: #DC322F !important;
+     }
+
+     .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+         color: #002B36;
+     }
+
+     .reveal blockquote {
+         background: #FDF6E3;
+     }
+    </style>
+  </head>
+
+  <body>
+    <i style="position: absolute; left: 20px; top: 20px; color: #ddd;" class="hs-icon icon-samurai"></i>
+
+    <div class="reveal">
+      <div class="slides">
+
+        <section>
+          <h3>Generic database for FHIR</h3>
+          <p style="color: #666;"> Madrid 2017 by @niquola</p>
+        </section>
+
+        <section style="top: 0px; display: block;" class="present">
+          <h3 style="font-size: 50px">
+            Nikolai Ryzhikov
+          </h3>
+          <a href="http://health-samurai.io" style="font-size: 30px; color: #666;"> CTO of Health Samurai</a>
+          <br/>
+          <img src="niquola.jpg" style="border:none; width: 400px; box-shado: none; background: transparent;">
+          <p style="letter-spacing: 32px;">
+            <a href="http://github.com/niquola">
+              <i class="fa fa-github"></i>
+            </a>
+            <a href="http://twitter.com/niquola">
+              <i class="fa fa-twitter"></i>
+            </a>
+            <a href="https://plus.google.com/u/0/+%D0%9D%D0%B8%D0%BA%D0%BE%D0%BB%D0%B0%D0%B9%D0%A0%D1%8B%D0%B6%D0%B8%D0%BA%D0%BE%D0%B2">
+              <i class="fa fa-google-plus"></i>
+            </a>
+            <a href="https://www.facebook.com/nicola.ryzhikov">
+              <i class="fa fa-facebook"></i>
+            </a>
+          </p>
+        </section>
+
+<section data-markdown><script type="text/template">
+## Our Beliefs / Motivation
+
+---
+
+* FHIR eco-system is a future
+* Generic FHIR platform as a useful brick
+* Proving this hypothesis with our clients
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## Generic server needs 
+## Generic Database
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## Minimal requirements
+
+* Transactions (ACID)
+* Sophisticated query (FHIR Search, Analytic etc)
+* Extensibility (Extensions, Search Params, Compartments)
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## How to approach
+
+* Relational DB
+* Document DB
+* Plygot
+* Tripple store 
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## Relational 
+---
+* [+] traditional (DBs, ORM)
+* [+] SQL queries  (analytic)
+* [+] ACID
+* [-] A lot of tables ~ 1K tables
+* [-] Complicated CRUD
+* [-] Complicated Search (a log for joins :)
+* [-] Extensibility is tricky
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## Document DBs
+---
+* [+] one to one match Resource <-> Document
+* [+] Doc Db's are distributed and available 
+* [-] no cross docs transactions
+* [-] support queries thro Resource Types 
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## Polyglot: Key-Value + Indexes 
+
+For example: 
+ casandre or riak + elastic
+
+* [+] scale & availability
+* [+] flexible
+* [-] complexity
+* [-] consistency
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## Tripple store
+
+Like datomic
+
+* [+] extensibility
+* [+] semantic
+* [-] popular implementations
+* [-] performance
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## fhirbase solution
+
+---
+
+Hybrid relational & document storage,
+
+using json  datatype support
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## Top level
+
+---
+
+* store FHIR resources in json column
+* use `fhirpath` functions for access fields 
+* use functional indexes to speedup queries
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## What we've got
+
+---
+
+* Transactions
+* Expressive power of SQL (add-hock queries, analytic etc)
+* Advanced features of PostgreSQL
+  indexing, extensions etc
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## What if not a postgres
+
+SQL standard 2016 includes
+*json* type and utility *functions*
+
+* mysql
+* oracle
+* mssql
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+### How it works
+
+```sql
+
+SELECT '{"a":1}'::jsonb;
+
+SELECT ('{"a":{"b":[1,2]}}'::jsonb)->'a';
+
+SELECT ('{"a":{"b":[1,2]}}'::jsonb)#>'{a,b,0}';
+
+SELECT jsonb_array_elements(doc#>'{a,b}')
+ FROM (
+  SELECT $JSON$
+    {"a": {
+      "b":[{"d": 1},
+           {"e": 2}]}}
+  $JSON$::jsonb doc) _;
+
+```
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+### Simulate doc db
+
+```sql
+
+CREATE TABLE patient (
+  id text primary key DEFAULT gen_random_uuid(),
+  ts timestamptz DEFAULT current_timestamp,
+  resource jsonb not null
+);
+
+CREATE TABLE patient_history (
+ ....
+);
+
+```
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+### CRUD
+
+```
+
+INSERT INTO patient (resource) VALUES
+('{"name":[{"given":["Nikolai"], "family": ["Ryzhikov"]}],
+  "birthDate": "1980-03-05"}');
+
+-- Update
+
+INSERT INTO patient_history
+SELECT * FROM patient
+WHER id = ...
+
+UPDATE patient
+SET resource = <new version> ;
+
+```
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+### Transacitons
+
+Wrap everything (create, update, delete) in transaciton
+Use logica transaction id as a version id
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## Implementing search
+
+```sql
+SELECT id, resource
+FROM patient
+ WHERE (resource->>'birthDate')::date < '1940-01-01'::date
+LIMIT 5
+
+SELECT id, resource
+  FROM patient
+ WHERE resource#>>'{name,0,given,0}' ilike '%jo%'
+;
+
+```
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## Extraction - fhirpath
+
+```sql
+SELECT
+  -- name.where(user='official').family
+  knife_extract(
+   resource,
+   '["name", {"use": "official"},"family"]'
+  ),
+  resource->'name'
+FROM patient
+limit 10
+```
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+## Specialized functions
+
+```sql
+SELECT resource->'birthDate'
+FROM patient
+WHERE
+  knife_extract_max_timestamptz(
+    resource, '["birthDate"]'
+  ) > knife_date_bound('2001', 'min')
+limit 10
+
+-- eager search
+-- max > min query
+-- min < max query
+```
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+### Chained params, references
+---
+
+```sql
+SELECT patient_name(p.resource),
+       e.resource->'hospitalization'
+FROM encounter e, patient p 
+WHERE e.resource#>>'{subject,id}' = p.id
+;
+```
+
+Small hack:
+{reference: ".."} => {id: "...", "resourceType": "..."}
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+### Quantity search & jsquery
+
+---
+
+```sql
+SELECT *
+FROM observation
+WHERE
+  resource @@ 'component.#(
+    code.coding.#.code = "8480-6"
+    and valueQuantity.value > 107
+  )'
+LIMIT 100
+;
+
+```
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+### Indexing
+
+---
+
+```sql
+
+CREATE EXTENSION pg_trgm;
+
+CREATE INDEX patient_name_ilike_idx
+ON patient using gin (
+  string_join(
+    knife_extract_text(
+      resource,
+      '[["name","given"], ["name","family"]]'
+    )
+  )
+gin_trgm_ops);
+
+```
+
+milions of records in ms
+
+</script></section>
+
+<section data-markdown><script type="text/template">
+
+### Terminology
+
+*  Concept as a resource
+*  Keep original concept properties
+*  ValueSet as SQL View
+
+</script></section>
+
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+
+     // Full list of configuration options available at:
+     // https://github.com/hakimel/reveal.js#configuration
+     Reveal.initialize({
+         controls: true,
+         progress: true,
+         history: true,
+         center: true,
+
+         transition: 'concave', // none/fade/slide/convex/concave/zoom
+
+         // Optional reveal.js plugins
+         dependencies: [
+             { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+             { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+             { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+             { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+             { src: 'plugin/highlight/highlight.pack.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+             { src: 'plugin/zoom-js/zoom.js', async: true },
+             { src: 'plugin/notes/notes.js', async: true }
+         ]
+     });
+    </script>
+  </body>
+</html>

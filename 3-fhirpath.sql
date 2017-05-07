@@ -1,6 +1,10 @@
+-- We need access deeply nested fields
+-- this is where document model differs
+-- from relations
 -- path expressions
 
-create extension if not exists jsonknife;
+create extension
+if not exists jsonknife;
 
 /*
 jsonknife is a postgres extension
@@ -35,18 +39,18 @@ limit 10
 
 -- index
 SELECT
-knife_extract(
-  resource, '[["name", 0, "use"]]'
-),
-resource->'name'
+  knife_extract(
+    resource, '[["name", 0, "use"]]'
+  ),
+  resource->'name'
 FROM patient
 limit 10
 ;
 
 SELECT
-knife_extract_max_timestamptz(
- resource, '[["birthDate"]]'
-),
+    knife_extract_max_timestamptz(
+    resource, '[["birthDate"]]'
+    ),
 resource->'name'
 FROM patient
 limit 10
